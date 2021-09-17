@@ -30,27 +30,82 @@ class App {
         let nombre = document.getElementById('nombre').value; 
         let cantidad = document.getElementById('cantidad').value; 
         let costo = document.getElementById('costo').value; 
-        let posicion = document.getElementById('posicion').value; 
-        let producto = new Producto(codigo, nombre, cantidad, costo, posicion); 
+        let producto = new Producto(codigo, nombre, cantidad, costo); 
 
-        if(this._inventario.crear(producto) == false){
+        let resultado = this._inventario.crear(producto);
+
+        if(resultado == false){
             Swal.fire("Error", "Este código ya está registrado o su inventario está lleno", "error");
             return;
         }
 
-        this._inventario.crear(producto);
         this._addToTable(producto);
     }
 
     _deleteProduct = () => {
         let codigo = document.getElementById('codigo').value;
 
-        this._inventario.eliminar(producto);
-        this._addToTable(producto);
+        let resultado = this._inventario.eliminar(codigo);
+
+        if(resultado == false){
+            Swal.fire("Error", "Este producto no existe", "error");
+            return;
+        }
+
+        Swal.fire("Correcto", "Producto eliminado", "success");
+        this._listProduct();
     }
 
+    _findProduct = () => {
+        let codigo = document.getElementById('codigo').value;
+
+        this._resetTable();
+        
+        let resultado = this._inventario.buscar(codigo);
+
+        if(resultado == null){
+            Swal.fire("Error", "Este producto no existe", "error");
+            return;
+        }
+
+        this._addToTable(this._inventario.buscar(codigo));
+    }
+
+    _listProduct = () => {   
+        this._resetTable();
+
+        this._inventario.lista().forEach((p) => {
+            this._addToTable(p);
+        });
+    }
+
+    _invertProduct = () => {
+        this._resetTable();
+        
+        this._inventario.listaInvertida().forEach((p) => {
+            this._addToTable(p);
+        });
+    }
+
+    _positionProduct = () => {
+        let codigo = document.getElementById('codigo').value; 
+        let nombre = document.getElementById('nombre').value; 
+        let cantidad = document.getElementById('cantidad').value; 
+        let costo = document.getElementById('costo').value; 
+        let posicion = document.getElementById('posicion').value; 
+        let producto = new Producto(codigo, nombre, cantidad, costo); 
+
+        let resultado = this._inventario.insertarPosicion(producto, posicion);
+
+        if(resultado == null){
+            Swal.fire("Error", "Este producto ya existe o la posición es incorrecta", "error");
+            return;
+        }
+
+        this._listProduct();
+    }
     
-    _addToTable(producto){
+    _addToTable(producto){   
         let row =this._tabla.insertRow(-1);
 
         let colCodigo = row.insertCell(0);
@@ -64,6 +119,13 @@ class App {
         colCantidad.innerHTML = producto._getCantidad();
         colCosto.innerHTML = producto._getCosto();
         colCostoTotal.innerHTML = producto._getCostoTotal();
+    }
+
+    _resetTable(){
+        while( this._tabla.rows.length > 2){
+            this._tabla.deleteRow(-1);
+        }                
+        
     }
 
 

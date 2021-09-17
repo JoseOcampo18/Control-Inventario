@@ -13,20 +13,23 @@ export default class Inventario{
     }
 
     eliminar(codigo){
-        let cont = 0;
+        if(this.buscar(codigo) != null){
+            let cont = 0;
         
-        for(let i = 0; i < this._inventario.length; i++){
-            if(codigo == this._inventario[i]._getCodigo()){
-                let cont2 = cont;
-                for(let x = cont + 1; x <= this._inventario.length; x++){
-                    this._inventario[cont2] = this._inventario[x];
-                    cont2++;
+            for(let i = 0; i < this._inventario.length; i++){
+                if(codigo == this._inventario[i]._getCodigo()){
+                    let cont2 = cont;
+                    for(let x = cont + 1; x <= this._inventario.length; x++){
+                        this._inventario[cont2] = this._inventario[x];
+                        cont2++;
+                    }
+                    return this._inventario.pop();
                 }
-                this._inventario.pop();
-            }
-            cont ++;
-        }
-        
+                cont ++;
+        }    
+        }   
+
+        return false;
     }
 
     buscar(codigo){
@@ -54,7 +57,7 @@ export default class Inventario{
         return inventarioInvertido;
     }
 
-    insertarPosición(nuevo, pos){
+    insertarPosicion(nuevo, pos){
         if(pos < this._inventario.length){
             this._inventario[pos] = nuevo;
         }
